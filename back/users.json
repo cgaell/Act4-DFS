@@ -10,5 +10,11 @@
     "name": "fernando rubio",
     "passwordHash": "$2b$10$vMbqpGJ5A2dB63Gbkq/D4Of14uRV7aY919bZ4myt4YdzGGZlmleJm",
     "role": "viewer"
+  },
+  {
+    "id": 1771103512803,
+    "name": "hola",
+    "passwordHash": "$2b$10$w1FmkTIxWEAQS0L38GiJyuc9FHRgLqkzLEDFZRLJSHR7pDnIUZDX.",
+    "role": "viewer"
   }
 ]

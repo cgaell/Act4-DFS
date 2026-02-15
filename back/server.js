@@ -37,7 +37,7 @@ app.use(express.static(path.join(__dirname, '../front')));
 // usar enrutadores de JS para usuarios, autenticacion y tareas
 app.use('/users', usuariosRouter);
 app.use('/login', authRouter);
-app.use('/tareas', require('./middleware.js').validateToken, tareasRouter); //validar sesion antes de acceder a rutas de tareas
+app.use('/tareas', require('./middleware.js').validateSession, tareasRouter); //validar sesion antes de acceder a rutas de tareas
 
 app.get('/register', (req, res) => { //ruta para registrarse
     res.sendFile(path.join(__dirname, '../front/register.html')); //enviar archivo register.html

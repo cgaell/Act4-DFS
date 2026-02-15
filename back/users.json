@@ -12,9 +12,15 @@
     "role": "viewer"
   },
   {
-    "id": 1771103512803,
-    "name": "hola",
-    "passwordHash": "$2b$10$w1FmkTIxWEAQS0L38GiJyuc9FHRgLqkzLEDFZRLJSHR7pDnIUZDX.",
+    "id": 1770668704425,
+    "name": "ernesto",
+    "passwordHash": "$2b$10$c2wcmuDG036AvWg6XsGls.y5d5uHXGjwyYCnFcBmIkDBFc95vQYYC",
+    "role": "viewer"
+  },
+  {
+    "id": 1770670721997,
+    "name": "Omar",
+    "passwordHash": "$2b$10$L43p2HUcHMOxaUgNd79Cu.4HCBpvp3eCETviMOiaE1dLgC/1sKeTS",
     "role": "viewer"
   }
 ]

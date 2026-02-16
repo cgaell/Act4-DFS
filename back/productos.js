@@ -38,10 +38,10 @@ router.post('/', async (req, res) => {
 //funcion para actualizar el status de la tarea
 router.put('/:id', validateTaskID, async (req, res) => {
     try {
-        const { name, quantity, expiryDate } = req.body;
+        const { name, quantity, expiryDate, status } = req.body;
         const producto = await Product.findOneAndUpdate(
             { id: req.params.id }, 
-            { name, quantity, expiryDate },
+            { name, quantity, expiryDate, status },
             { new: true } // Para que devuelva el objeto actualizado
         );
 

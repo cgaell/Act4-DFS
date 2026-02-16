@@ -252,7 +252,7 @@ async function updateProductStatus(id, newStatus) {
 
 async function loadProducts() {
     try {
-        const response = await fetch('/products'); // Endpoint cambiado
+        const response = await fetch('/productos'); // Endpoint cambiado
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
         products = data.productos || []; // Esperamos "productos" del backend

@@ -21,7 +21,7 @@ const taskList = document.getElementById('taskList'); // Ahora lista productos
 // Inputs
 const taskNameInput = document.getElementById('taskName'); // Será el Nombre del Producto
 const statusInput = document.getElementById('status');
-const assignedToInput = document.getElementById('assignedTo'); // Será la Categoría
+const assignedToInput = document.getElementById('assignedTo'); // Será la Cantidad
 const assignedDateInput = document.getElementById('assignedDate'); // Será Fecha Caducidad
 
 // Auth elements

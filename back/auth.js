@@ -3,6 +3,7 @@ const router = express.Router();
 const path = require('path');
 const fs = require('fs').promises;
 const bcrypt = require('bcryptjs');
+const User = require('./models/User.js');
 
 // Ruta para acceder a login.html
 router.get('/', (req, res) => {

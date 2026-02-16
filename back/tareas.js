@@ -1,57 +1,37 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs').promises;
-const path = require('path');
-const { validateTaskID } = require('./middleware.js');
-const { isAdmin } = require('./middleware.js');
+const { validateTaskID, isAdmin } = require('./middleware.js');
+const Task = require('./models/Task.js');
 
-//alineacion de las tareas por id al json
-const DATA_PATH = path.join(__dirname, 'tareas.json');
 
-//funcion para leer las tareas del json
-async function readTareas() {
-    try {
-        const data = await fs.readFile(DATA_PATH, 'utf8');
-        return JSON.parse(data);
-    } catch (err) {
-        if (err.code === 'ENOENT') return [];
-        throw err;
-    }
-}
-
-//funcion para poder agregar las tareas al json
-async function writeTareas(tareas) {
-    await fs.writeFile(DATA_PATH, JSON.stringify(tareas, null, 2), 'utf8');
-}
-
-//endpoint para poder obtener las tareas
 router.get('/', async (req, res) => {
     try {
-        const tareas = await readTareas();
-        res.status(200).json({
-            total: tareas.length,
-            tareas
-        });
+        const tareas = await Task.find(); // Mongoose hace la magia
+        res.status(200).json({ total: tareas.length, tareas });
     } catch (err) {
-        res.status(500).json({ message: 'Error leyendo tareas' });
+        res.status(500).json({ message: 'Error obteniendo tareas' });
     }
 });
+
 
 //funcion para poder agregar tareas
 router.post('/', async (req, res) => {
     try {
-        const nuevaTarea = req.body;
-        if (!nuevaTarea.id) {
-            nuevaTarea.id = Date.now();
-        }
-        const tareas = await readTareas();
-        tareas.push(nuevaTarea);
-        await writeTareas(tareas);
-        res.status(201).json({
-            message: 'Tarea creada exitosamente',
-            tarea: nuevaTarea
+        const { taskName, status, assignedTo, assignedDate, id } = req.body;
+        
+        // Creamos la tarea en Mongo
+        const nuevaTarea = await Task.create({
+            id: id || Date.now().toString(), // Usamos tu logica de ID o generamos uno
+            taskName,
+            status,
+            assignedTo,
+            assignedDate,
+            createdBy: req.session.user ? req.session.user.name : 'System'
         });
+
+        res.status(201).json({ message: 'Tarea creada', tarea: nuevaTarea });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: 'Error creando tarea' });
     }
 });
@@ -59,18 +39,18 @@ router.post('/', async (req, res) => {
 //funcion para actualizar el status de la tarea
 router.put('/:id', validateTaskID, async (req, res) => {
     try {
-        const { id } = req.params;
         const { status } = req.body;
-        const tareas = await readTareas();
-        const taskIndex = tareas.findIndex(t => t.id == id);
-        if (taskIndex !== -1) {
-            tareas[taskIndex].status = status;
-            await writeTareas(tareas);
-            res.status(200).json({ message: 'Tarea actualizada', tarea: tareas[taskIndex] });
-        } else {
-            res.status(404).json({ message: 'Tarea no encontrada' });
-        }
+        const tarea = await Task.findOneAndUpdate(
+            { id: req.params.id }, 
+            { status },
+            { new: true } // Para que devuelva el objeto actualizado
+        );
+
+        if (!tarea) return res.status(404).json({ message: 'Tarea no encontrada' });
+        
+        res.status(200).json({ message: 'Tarea actualizada', tarea });
     } catch (err) {
+        console.error(err);
         res.status(500).json({ message: 'Error actualizando tarea' });
     }
 });
@@ -78,18 +58,13 @@ router.put('/:id', validateTaskID, async (req, res) => {
 //funcion para poder eliminar tareas
 router.delete('/:id', validateTaskID, isAdmin, async (req, res) => {
     try {
-        const { id } = req.params;
-        const tareas = await readTareas();
-        const initialLength = tareas.length;
-        const nuevas = tareas.filter(t => t.id != id);
-        if (nuevas.length < initialLength) {
-            await writeTareas(nuevas);
-            res.status(200).json({ message: 'Tarea eliminada' });
-        } else {
-            res.status(404).json({ message: 'Tarea no encontrada' });
-        }
+        const resultado = await Task.findOneAndDelete({ id: req.params.id });
+        
+        if (!resultado) return res.status(404).json({ message: 'Tarea no encontrada' });
+
+        res.status(200).json({ message: 'Tarea eliminada' });
     } catch (err) {
-        res.status(500).json({ message: 'Error eliminando tarea' });
+        res.status(500).json({ message: 'Error eliminando' });
     }
 });
 

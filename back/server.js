@@ -1,12 +1,18 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path'); // Importante para manejar rutas de carpetas
 const app = express();
 const session = require('express-session'); // Para manejar sesiones
-const PORT = 3000;
+const connectDB = require('./db.js'); // Importar la conexión a la base de datos
+const PORT = 8080;
 const fs = require('fs').promises; //para manejar archivos
 const bcrypt = require('bcryptjs'); //para encriptar contraseñas
 
+
+
 const { logRequest, isAdmin } = require('./middleware.js'); //importar middleware con logrequest y la validacion de que si es admin o no
+
+connectDB(); // Conectar a la base de datos
 
 //Importar las rutas de JS 
 const usuariosRouter = require('./users.js'); //importar rutas de usuarios
@@ -76,18 +82,18 @@ app.post('/register', (req, res) => { //ruta para registrarse
     })();
 });
 
-app.get('/admin/tareas', isAdmin, (req, res) => { //ruta para acceder a tareas de admin
-    // Definimos la ruta hacia el archivo tareas.json
-    const filePath = path.join(__dirname, 'tareas.json'); //se guardan las tareas posteadas en tareas.json
+// app.get('/admin/tareas', isAdmin, (req, res) => { //ruta para acceder a tareas de admin
+//     // Definimos la ruta hacia el archivo tareas.json
+//     const filePath = path.join(__dirname, 'tareas.json'); //se guardan las tareas posteadas en tareas.json
     
-    // Enviamos el archivo físico al navegador
-    res.sendFile(filePath, (err) => {
-        if (err) {
-            console.error("Error al enviar el archivo:", err);
-            res.status(500).json({ error: "No se encontró el archivo de tareas" });
-        }
-    });
-});
+//     // Enviamos el archivo físico al navegador
+//     res.sendFile(filePath, (err) => {
+//         if (err) {
+//             console.error("Error al enviar el archivo:", err);
+//             res.status(500).json({ error: "No se encontró el archivo de tareas" });
+//         }
+//     });
+// });
 
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);

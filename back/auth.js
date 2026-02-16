@@ -7,7 +7,7 @@ const User = require('./models/User.js'); // Asegúrate que la ruta sea correcta
 // ----------------------
 // RUTAS DE VISTAS (HTML)
 // ----------------------
-
+const publicPath = path.join(__dirname, 'public');
 // Ruta para ver el formulario de Login
 router.get('/login', (req, res) => {
     res.sendFile(path.join(publicPath, 'login.html'));

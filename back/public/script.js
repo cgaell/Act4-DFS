@@ -252,10 +252,10 @@ async function updateProductStatus(id, newStatus) {
 
 async function loadProducts() {
     try {
-        const response = await fetch('/productos'); // Endpoint cambiado
+        const response = await fetch('/products'); // Endpoint cambiado
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
-        products = data.productos || []; // Esperamos "productos" del backend
+        products = data.products || []; // Esperamos "productos" del backend
         renderProducts();
         updateCounts();
     } catch (error) {
@@ -351,12 +351,20 @@ function renderProducts() {
 }
 
 function updateCounts() {
-    // Usamos ?. para evitar error si el elemento HTML no existe
-    document.getElementById('count-all')?.replaceChildren(document.createTextNode(products.length));
-    document.getElementById('count-not-started')?.replaceChildren(document.createTextNode(products.filter(t => t.status === 'out-of-stock').length)); // Rojo
-    document.getElementById('count-in-progress')?.replaceChildren(document.createTextNode(products.filter(t => t.status === 'low-stock').length));     // Amarillo
-    document.getElementById('count-on-hold')?.replaceChildren(document.createTextNode(products.filter(t => t.status === 'discontinued').length));       // Gris
-    document.getElementById('count-completed')?.replaceChildren(document.createTextNode(products.filter(t => t.status === 'in-stock').length));         // Verde
+    // Referencias exactas a tus IDs del HTML
+    const elements = {
+        all: document.getElementById('count-all'),
+        inStock: document.getElementById('count-in-stock'),
+        lowStock: document.getElementById('count-low-stock'),
+        outOfStock: document.getElementById('count-out-of-stock'),
+        discontinued: document.getElementById('count-discontinued')
+    };
+
+    if (elements.all) elements.all.textContent = products.length;
+    if (elements.inStock) elements.inStock.textContent = products.filter(p => p.status === 'in-stock').length;
+    if (elements.lowStock) elements.lowStock.textContent = products.filter(p => p.status === 'low-stock').length;
+    if (elements.outOfStock) elements.outOfStock.textContent = products.filter(p => p.status === 'out-of-stock').length;
+    if (elements.discontinued) elements.discontinued.textContent = products.filter(p => p.status === 'discontinued').length;
 }
 
 // Helper functions

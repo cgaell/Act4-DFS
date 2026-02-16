@@ -44,6 +44,7 @@ app.use(express.static(publicPath));
 // usar enrutadores de JS para usuarios, autenticacion y tareas
 app.use('/users', usuariosRouter);
 app.use('/', authRouter);
+//Update the products route path from '/products' to '/productos' to match the frontend changes
 app.use('/products', require('./middleware.js').validateSession, productosRouter); //validar sesion antes de acceder a rutas de productos
 
 // app.get('/register', (req, res) => { //ruta para registrarse

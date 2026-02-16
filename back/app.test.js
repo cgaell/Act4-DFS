@@ -34,10 +34,10 @@ describe('Suite de Pruebas Unitarias - Inventario y Usuarios', () => {
             const mockItems = [{ name: 'Producto A', quantity: 10 }];
             Product.find.mockResolvedValue(mockItems);
 
-            const res = await request(app).get('/products');
+            const res = await request(app).get('/productos');
             
             expect(res.statusCode).toBe(200);
-            expect(res.body.products).toHaveLength(1);
+            expect(res.body.productos).toHaveLength(1);
             expect(Product.find).toHaveBeenCalled();
         });
 
@@ -55,7 +55,7 @@ describe('Suite de Pruebas Unitarias - Inventario y Usuarios', () => {
         test('DELETE /products/:id - Debería eliminar un producto', async () => {
             Product.findOneAndDelete.mockResolvedValue({ id: '123' });
 
-            const res = await request(app).delete('/products/123');
+            const res = await request(app).delete('/productos/123');
 
             expect(res.statusCode).toBe(200);
             expect(res.body.message).toBe('Producto eliminado');

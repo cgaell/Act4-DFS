@@ -1,27 +1,29 @@
 // State
-let todos = [];
+let products = []; // Cambiamos todos por products
 let currentFilter = 'all';
 
-// Status configuration
+// Status configuration (Mapeado a tus clases CSS existentes)
 const statusConfig = {
-    'in-stock': { label: 'En Stock', class: 'badge-completed' },       // Usamos clases verdes
-    'low-stock': { label: 'Bajo Stock', class: 'badge-in-progress' },  // Clases amarillas
-    'out-of-stock': { label: 'Agotado', class: 'badge-not-started' },  // Clases rojas
-    'discontinued': { label: 'Discontinuado', class: 'badge-on-hold' } // Clases grises
+    'in-stock': { label: 'En Stock', class: 'badge-completed' },       // Verde
+    'low-stock': { label: 'Bajo Stock', class: 'badge-in-progress' },  // Amarillo
+    'out-of-stock': { label: 'Agotado', class: 'badge-not-started' },  // Rojo
+    'discontinued': { label: 'Descontinuado', class: 'badge-on-hold' } // Gris
 };
 
-// DOM Elements
+// DOM Elements (Mantenemos los IDs del HTML para no romper nada visual)
 const openDialogBtn = document.getElementById('openDialogBtn');
 const closeDialogBtn = document.getElementById('closeDialogBtn');
 const cancelBtn = document.getElementById('cancelBtn');
-const createTaskBtn = document.getElementById('createTaskBtn');
+const createTaskBtn = document.getElementById('createTaskBtn'); // Ahora crea productos
 const taskDialog = document.getElementById('taskDialog');
-const taskList = document.getElementById('taskList');
+const taskList = document.getElementById('taskList'); // Ahora lista productos
 
-const taskNameInput = document.getElementById('taskName');
+// Inputs
+const taskNameInput = document.getElementById('taskName'); // Será el Nombre del Producto
 const statusInput = document.getElementById('status');
-const assignedToInput = document.getElementById('assignedTo');
-const assignedDateInput = document.getElementById('assignedDate');
+const assignedToInput = document.getElementById('assignedTo'); // Será la Categoría
+const assignedDateInput = document.getElementById('assignedDate'); // Será Fecha Caducidad
+
 // Auth elements
 const loginForm = document.getElementById('loginForm');
 const registerForm = document.getElementById('registerForm');
@@ -34,18 +36,17 @@ const registerMessage = document.getElementById('registerMessage');
 
 // Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    loadTodos();
-    renderTasks();
-    updateCounts();
+    loadProducts(); // Cargar productos
     setupEventListeners();
 });
 
 // Event Listeners
 function setupEventListeners() {
-    openDialogBtn.addEventListener('click', openDialog);
-    closeDialogBtn.addEventListener('click', closeDialog);
-    cancelBtn.addEventListener('click', closeDialog);
-    createTaskBtn.addEventListener('click', createTask);
+    if(openDialogBtn) openDialogBtn.addEventListener('click', openDialog);
+    if(closeDialogBtn) closeDialogBtn.addEventListener('click', closeDialog);
+    if(cancelBtn) cancelBtn.addEventListener('click', closeDialog);
+    if(createTaskBtn) createTaskBtn.addEventListener('click', createProduct); // Crear producto
+
     // Auth forms
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -61,11 +62,13 @@ function setupEventListeners() {
     }
     
     // Close modal when clicking outside
-    taskDialog.addEventListener('click', (e) => {
-        if (e.target === taskDialog) {
-            closeDialog();
-        }
-    });
+    if(taskDialog) {
+        taskDialog.addEventListener('click', (e) => {
+            if (e.target === taskDialog) {
+                closeDialog();
+            }
+        });
+    }
 
     // Filter buttons
     const filterBtns = document.querySelectorAll('.filter-btn');
@@ -74,11 +77,12 @@ function setupEventListeners() {
             currentFilter = btn.dataset.filter;
             filterBtns.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            renderTasks();
+            renderProducts();
         });
     });
 }
 
+// --- AUTH FUNCTIONS (Sin cambios) ---
 async function loginUser() {
     try {
         const payload = {
@@ -94,6 +98,7 @@ async function loginUser() {
         if (res.ok) {
             loginMessage.textContent = data.message || 'Login exitoso';
             loginMessage.style.color = 'lightgreen';
+            setTimeout(() => window.location.href = '/', 1000); // Redirigir
         } else {
             loginMessage.textContent = data.error || 'Login inválido';
             loginMessage.style.color = '#E74C3C';
@@ -110,7 +115,7 @@ async function registerUser() {
             username: regUsername.value.trim(),
             password: regPassword.value
         };
-        const res = await fetch('/login/register', {
+        const res = await fetch('/register', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
@@ -119,6 +124,7 @@ async function registerUser() {
         if (res.ok) {
             registerMessage.textContent = data.message || 'Registro exitoso';
             registerMessage.style.color = 'lightgreen';
+            setTimeout(() => window.location.href = '/login', 1500);
         } else {
             registerMessage.textContent = data.error || 'Registro inválido';
             registerMessage.style.color = '#E74C3C';
@@ -128,7 +134,8 @@ async function registerUser() {
         registerMessage.style.color = '#E74C3C';
     }
 }
-// Modal functions
+
+// --- UI FUNCTIONS ---
 function openDialog() {
     taskDialog.classList.add('active');
 }
@@ -140,50 +147,53 @@ function closeDialog() {
 
 function resetForm() {
     taskNameInput.value = '';
-    statusInput.value = 'not-started';
+    statusInput.value = 'in-stock'; // Valor por defecto
     assignedToInput.value = '';
     assignedDateInput.value = '';
 }
 
-// CRUD Operations
-async function createTask() {
-    const taskName = taskNameInput.value.trim();
-    const status = statusInput.value;
-    const assignedTo = assignedToInput.value.trim();
-    const assignedDate = assignedDateInput.value || getTodayDate();
+// --- CRUD OPERATIONS (Adaptado a Productos) ---
 
-    if (!taskName || !assignedTo) {
-        alert('Please fill in all required fields');
+async function createProduct() {
+    // Mapeamos los inputs a variables de Producto
+    const name = taskNameInput.value.trim();
+    const status = statusInput.value;
+    const category = assignedToInput.value.trim();
+    const expiryDate = assignedDateInput.value; // Puede estar vacío
+
+    if (!name || !category) {
+        alert('Por favor llena el nombre y la categoría');
         return;
     }
 
-    const newTask = {
+    const newProduct = {
         id: Date.now().toString(),
-        taskName,
-        createdDate: getTodayDate(),
+        name,         // Antes taskName
+        category,     // Antes assignedTo
         status,
-        createdBy: 'System', // Will be replaced with authenticated user later
-        assignedTo,
-        assignedDate
+        expiryDate,   // Antes assignedDate
+        // entryDate se genera en el backend o aquí si prefieres
+        entryDate: getTodayDate()
     };
 
     try {
-        const response = await fetch('/tareas', {
+        const response = await fetch('/products', { // Endpoint cambiado
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify(newTask)
+            body: JSON.stringify(newProduct)
         });
 
         if (response.ok) {
-            todos.unshift(newTask);
-            renderTasks();
+            const savedData = await response.json();
+            products.unshift(savedData.product || newProduct);
+            renderProducts();
             updateCounts();
             closeDialog();
         } else {
-            console.error('Error saving task to backend');
-            alert('Failed to save task');
+            console.error('Error saving product');
+            alert('Failed to save product');
         }
     } catch (error) {
         console.error('Error:', error);
@@ -191,15 +201,17 @@ async function createTask() {
     }
 }
 
-async function deleteTask(id) {
+async function deleteProduct(id) {
+    if(!confirm('¿Estás seguro de eliminar este producto?')) return;
+
     try {
-        const response = await fetch(`/tareas/${id}`, { method: 'DELETE' });
+        const response = await fetch(`/products/${id}`, { method: 'DELETE' }); // Endpoint cambiado
         if (response.ok) {
-            todos = todos.filter(todo => todo.id !== id);
-            renderTasks();
+            products = products.filter(p => p.id !== id);
+            renderProducts();
             updateCounts();
         } else {
-            alert('Failed to delete task');
+            alert('Solo el administrador puede eliminar');
         }
     } catch (error) {
         console.error('Error:', error);
@@ -207,60 +219,76 @@ async function deleteTask(id) {
     }
 }
 
-async function updateTaskStatus(id, newStatus) {
-    const task = todos.find(todo => todo.id === id);
-    if (task) {
-        const oldStatus = task.status;
-        task.status = newStatus;
-        renderTasks();
+async function updateProductStatus(id, newStatus) {
+    const product = products.find(p => p.id === id);
+    if (product) {
+        const oldStatus = product.status;
+        product.status = newStatus;
+        renderProducts();
         updateCounts();
 
         try {
-            const response = await fetch(`/tareas/${id}`, {
+            const response = await fetch(`/products/${id}`, { // Endpoint cambiado
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: newStatus })
             });
             if (!response.ok) {
-                task.status = oldStatus;
-                renderTasks();
+                product.status = oldStatus;
+                renderProducts();
                 updateCounts();
-                alert('Failed to update status');
+                alert('Error al actualizar estado');
             }
         } catch (error) {
             console.error('Error:', error);
-            task.status = oldStatus;
-            renderTasks();
+            product.status = oldStatus;
+            renderProducts();
             updateCounts();
-            alert('Error connecting to server');
         }
     }
 }
 
-// Render functions
-function renderTasks() {
-    const filteredTodos = getFilteredTodos();
+// --- RENDER FUNCTIONS ---
+
+async function loadProducts() {
+    try {
+        const response = await fetch('/products'); // Endpoint cambiado
+        if (!response.ok) throw new Error('Failed to fetch');
+        const data = await response.json();
+        products = data.products || []; // Esperamos "products" del backend
+        renderProducts();
+        updateCounts();
+    } catch (error) {
+        console.error('Error loading products:', error);
+        products = [];
+        renderProducts();
+        updateCounts();
+    }
+}
+
+function renderProducts() {
+    const filteredProducts = getFilteredProducts();
     
-    if (filteredTodos.length === 0) {
+    if (filteredProducts.length === 0) {
         taskList.innerHTML = `
             <div class="empty-state">
-                <p>${todos.length === 0 
-                    ? 'No tasks yet. Create your first task to get started!' 
-                    : `No ${currentFilter === 'all' ? '' : statusConfig[currentFilter].label.toLowerCase()} tasks`}
+                <p>${products.length === 0 
+                    ? 'No hay productos. ¡Agrega el primero al inventario!' 
+                    : 'No hay productos en esta categoría'}
                 </p>
             </div>
         `;
         return;
     }
 
-    taskList.innerHTML = filteredTodos.map(task => `
+    taskList.innerHTML = filteredProducts.map(product => `
         <div class="task-card">
             <div class="task-header">
                 <div class="task-info">
                     <div class="task-title-row">
-                        <h3 class="task-title">${escapeHtml(task.taskName)}</h3>
-                        <span class="badge ${statusConfig[task.status].class}">
-                            ${statusConfig[task.status].label}
+                        <h3 class="task-title">${escapeHtml(product.name)}</h3>
+                        <span class="badge ${statusConfig[product.status]?.class || 'badge-not-started'}">
+                            ${statusConfig[product.status]?.label || product.status}
                         </span>
                     </div>
                     <div class="task-details">
@@ -271,48 +299,50 @@ function renderTasks() {
                                 <line x1="8" y1="2" x2="8" y2="6"></line>
                                 <line x1="3" y1="10" x2="21" y2="10"></line>
                             </svg>
-                            <span>Created: ${formatDate(task.createdDate)}</span>
+                            <span>Entrada: ${formatDate(product.entryDate)}</span>
                         </div>
+                        
                         <div class="task-detail">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
-                            <span>Created by: ${escapeHtml(task.createdBy)}</span>
+                            <span>Cat: ${escapeHtml(product.category)}</span>
                         </div>
+
                         <div class="task-detail">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
                                 <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
                             </svg>
-                            <span>Assigned to: ${escapeHtml(task.assignedTo)}</span>
+                            <span>User: ${escapeHtml(product.createdBy || 'System')}</span>
                         </div>
+
+                        ${product.expiryDate ? `
                         <div class="task-detail">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect width="18" height="18" rx="2" ry="2"></rect>
-                                <line x1="16" y1="2" x2="16" y2="6"></line>
-                                <line x1="8" y1="2" x2="8" y2="6"></line>
-                                <line x1="3" y1="10" x2="21" y2="10"></line>
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
                             </svg>
-                            <span>Assigned: ${formatDate(task.assignedDate)}</span>
-                        </div>
+                            <span>Exp: ${formatDate(product.expiryDate)}</span>
+                        </div>` : ''}
                     </div>
                 </div>
+                
                 <div class="task-actions">
-                    <select onchange="updateTaskStatus('${task.id}', this.value)" value="${task.status}">
-                        <option value="not-started" ${task.status === 'not-started' ? 'selected' : ''}>Not Started</option>
-                        <option value="in-progress" ${task.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
-                        <option value="on-hold" ${task.status === 'on-hold' ? 'selected' : ''}>On Hold</option>
-                        <option value="completed" ${task.status === 'completed' ? 'selected' : ''}>Completed</option>
+                    <select onchange="updateProductStatus('${product.id}', this.value)">
+                        <option value="in-stock" ${product.status === 'in-stock' ? 'selected' : ''}>En Stock</option>
+                        <option value="low-stock" ${product.status === 'low-stock' ? 'selected' : ''}>Bajo Stock</option>
+                        <option value="out-of-stock" ${product.status === 'out-of-stock' ? 'selected' : ''}>Agotado</option>
+                        <option value="discontinued" ${product.status === 'discontinued' ? 'selected' : ''}>Descontinuado</option>
                     </select>
-                    <button class="btn-delete" onclick="deleteTask('${task.id}')">
+                    
+                    <button class="btn-delete" onclick="deleteProduct('${product.id}')">
                         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polyline points="3 6 5 6 21 6"></polyline>
                             <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
                         </svg>
-                        Delete
+                        Borrar
                     </button>
                 </div>
             </div>
@@ -321,19 +351,20 @@ function renderTasks() {
 }
 
 function updateCounts() {
-    document.getElementById('count-all').textContent = todos.length;
-    document.getElementById('count-not-started').textContent = todos.filter(t => t.status === 'not-started').length;
-    document.getElementById('count-in-progress').textContent = todos.filter(t => t.status === 'in-progress').length;
-    document.getElementById('count-on-hold').textContent = todos.filter(t => t.status === 'on-hold').length;
-    document.getElementById('count-completed').textContent = todos.filter(t => t.status === 'completed').length;
+    // Usamos ?. para evitar error si el elemento HTML no existe
+    document.getElementById('count-all')?.replaceChildren(document.createTextNode(products.length));
+    document.getElementById('count-not-started')?.replaceChildren(document.createTextNode(products.filter(t => t.status === 'out-of-stock').length)); // Rojo
+    document.getElementById('count-in-progress')?.replaceChildren(document.createTextNode(products.filter(t => t.status === 'low-stock').length));     // Amarillo
+    document.getElementById('count-on-hold')?.replaceChildren(document.createTextNode(products.filter(t => t.status === 'discontinued').length));       // Gris
+    document.getElementById('count-completed')?.replaceChildren(document.createTextNode(products.filter(t => t.status === 'in-stock').length));         // Verde
 }
 
 // Helper functions
-function getFilteredTodos() {
+function getFilteredProducts() {
     if (currentFilter === 'all') {
-        return todos;
+        return products;
     }
-    return todos.filter(todo => todo.status === currentFilter);
+    return products.filter(product => product.status === currentFilter);
 }
 
 function getTodayDate() {
@@ -341,8 +372,9 @@ function getTodayDate() {
 }
 
 function formatDate(dateString) {
+    if (!dateString) return '';
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
+    return date.toLocaleDateString('es-ES', { 
         month: 'short', 
         day: 'numeric', 
         year: 'numeric' 
@@ -350,28 +382,8 @@ function formatDate(dateString) {
 }
 
 function escapeHtml(text) {
+    if (!text) return '';
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
-}
-
-// LocalStorage functions
-function saveTodos() {
-    localStorage.setItem('todos', JSON.stringify(todos));
-}
-
-async function loadTodos() {
-    try {
-        const response = await fetch('/tareas');
-        if (!response.ok) throw new Error('Failed to fetch tasks');
-        const data = await response.json();
-        todos = data.tareas || [];
-        renderTasks();
-        updateCounts();
-    } catch (error) {
-        console.error('Error loading tasks:', error);
-        todos = [];
-        renderTasks();
-        updateCounts();
-    }
 }

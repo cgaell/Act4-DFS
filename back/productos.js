@@ -38,23 +38,23 @@ router.post('/', async (req, res) => {
 //funcion para actualizar el status de la tarea
 router.put('/:id', validateTaskID, async (req, res) => {
     try {
-        const { status } = req.body;
-        const tarea = await Task.findOneAndUpdate(
+        const { name, category, expiryDate } = req.body;
+        const producto = await Product.findOneAndUpdate(
             { id: req.params.id }, 
-            { status },
+            { name, category, expiryDate },
             { new: true } // Para que devuelva el objeto actualizado
         );
 
-        if (!tarea) return res.status(404).json({ message: 'Producto no encontrado' });
+        if (!producto) return res.status(404).json({ message: 'Producto no encontrado' });
         
-        res.status(200).json({ message: 'Producto actualizado', producto: tarea });
+        res.status(200).json({ message: 'Producto actualizado', producto });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Error actualizando producto' });
     }
 });
 
-//funcion para poder eliminar tareas
+//funcion para poder eliminar productos
 router.delete('/:id', validateTaskID, isAdmin, async (req, res) => {
     try {
         const resultado = await Product.findOneAndDelete({ id: req.params.id });
@@ -70,7 +70,7 @@ router.delete('/:id', validateTaskID, isAdmin, async (req, res) => {
 //ejemplo de clase
 router.get('/nuevo', validateTaskID, (req, res) => {
     res.status(201).json({
-        message: 'Se agregó una nueva tarea',
+        message: 'Se agregó un nuevo producto',
         timestamp: new Date()
     });
 });
@@ -78,7 +78,7 @@ router.get('/nuevo', validateTaskID, (req, res) => {
 //ejemplo de clase
 router.get('/:id', validateTaskID, (req, res) => {
     res.status(200).json({
-        message: `Detalle de la tarea encontrada: ${req.params.id}`
+        message: `Detalle del producto encontrado: ${req.params.id}`
     });
 });
 

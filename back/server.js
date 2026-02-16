@@ -31,14 +31,14 @@ app.use(session({
 // Ruta raíz: si no hay sesión, redirige a /login; si hay sesión, sirve el index
 app.get('/', (req, res) => {
     if (req.session && req.session.user) {
-        return res.sendFile(path.join(__dirname, '../front/index.html'));
+        return res.sendFile(path.join(__dirname, '../public/index.html'));
     } else {
         return res.redirect('/login');
     }
 });
 
 // Esto reemplaza la necesidad de hacer require del index.html
-app.use(express.static(path.join(__dirname, '../front')));
+app.use(express.static(path.join(__dirname, '../public')));
 
 // usar enrutadores de JS para usuarios, autenticacion y tareas
 app.use('/users', usuariosRouter);

@@ -10,12 +10,12 @@ const User = require('./models/User.js'); // Asegúrate que la ruta sea correcta
 
 // Ruta para ver el formulario de Login
 router.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/login.html'));
+    res.sendFile(path.join(publicPath, 'login.html'));
 });
 
 // Ruta para ver el formulario de Registro
 router.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, '../public/register.html'));
+    res.sendFile(path.join(publicPath, 'register.html'));
 });
 
 // ----------------------

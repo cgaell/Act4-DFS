@@ -36,9 +36,9 @@ app.get('/', (req, res) => {
         return res.redirect('/login');
     }
 });
-
+const publicPath = path.join(process.cwd(), 'public');
 // Esto reemplaza la necesidad de hacer require del index.html
-app.use(express.static(path.join(__dirname, '../public')));
+app.use(express.static(publicPath));
 
 // usar enrutadores de JS para usuarios, autenticacion y tareas
 app.use('/users', usuariosRouter);

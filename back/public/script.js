@@ -96,8 +96,6 @@ async function loginUser() {
         });
         const data = await res.json();
         if (res.ok) {
-            const username = loginUsername.value.trim()
-            localStorage.setItem('currentUserName', payload.username);
             loginMessage.textContent = data.message || 'Login exitoso';
             loginMessage.style.color = 'lightgreen';
             setTimeout(() => window.location.href = '/', 1000); // Redirigir
@@ -177,15 +175,7 @@ async function createProduct() {
         // entryDate se genera en el backend o aquí si prefieres
         entryDate: getTodayDate()
     };
-        products.unshift(newProduct);
-    
-    
-    localStorage.setItem(`inventory_${currentUser}`, JSON.stringify(products));
 
-   
-        renderProducts();
-        updateCounts();
-        closeDialog();
     try {
         const response = await fetch('/products', { // Endpoint cambiado
             method: 'POST',
@@ -261,41 +251,18 @@ async function updateProductStatus(id, newStatus) {
 // --- RENDER FUNCTIONS ---
 
 async function loadProducts() {
-    // 1. Identificar al usuario para cargar su inventario específico
-    const currentUser = localStorage.getItem('currentUserName') || 'guest';
-    const localKey = `inventory_${currentUser}`;
-
-    // 2. Intento de carga inmediata desde LocalStorage (Persistencia local)
-    const localData = localStorage.getItem(localKey);
-    if (localData) {
-        try {
-            products = JSON.parse(localData);
-            renderProducts();
-            updateCounts();
-            console.log('Datos cargados desde LocalStorage');
-        } catch (e) {
-            console.error('Error parseando LocalStorage', e);
-        }
-    }
-
-    // 3. Sincronización con el servidor
     try {
-        const response = await fetch('/products'); 
-        if (!response.ok) throw new Error('Failed to fetch from server');
-        
+        const response = await fetch('/products'); // Endpoint cambiado
+        if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
-        products = data.products || []; 
-
-        // 4. Actualizar LocalStorage con la "verdad" del servidor
-        localStorage.setItem(localKey, JSON.stringify(products));
-        
+        products = data.products || []; // Esperamos "productos" del backend
         renderProducts();
         updateCounts();
-        console.log('Sincronización con servidor exitosa');
     } catch (error) {
-        console.error('Error loading products from server:', error);
-        // No limpiamos 'products' aquí para que el usuario pueda seguir 
-        // viendo los datos de LocalStorage aunque el servidor falle.
+        console.error('Error loading products:', error);
+        products = [];
+        renderProducts();
+        updateCounts();
     }
 }
 

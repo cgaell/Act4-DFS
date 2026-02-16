@@ -10,7 +10,7 @@ const statusConfig = {
     'discontinued': { label: 'Descontinuado', class: 'badge-on-hold' } // Gris
 };
 
-// DOM Elements (Mantenemos los IDs del HTML para no romper nada visual)
+// DOM Elements 
 const openDialogBtn = document.getElementById('openDialogBtn');
 const closeDialogBtn = document.getElementById('closeDialogBtn');
 const cancelBtn = document.getElementById('cancelBtn');
@@ -158,18 +158,18 @@ async function createProduct() {
     // Mapeamos los inputs a variables de Producto
     const name = taskNameInput.value.trim();
     const status = statusInput.value;
-    const category = assignedToInput.value.trim();
+    const quantity = parseInt(assignedToInput.value);
     const expiryDate = assignedDateInput.value; // Puede estar vacío
 
-    if (!name || !category) {
-        alert('Por favor llena el nombre y la categoría');
+    if (!name || !quantity) {
+        alert('Por favor llena el nombre y la cantidad');
         return;
     }
 
     const newProduct = {
         id: Date.now().toString(),
         name,         // Antes taskName
-        category,     // Antes assignedTo
+        quantity,     // Antes assignedTo
         status,
         expiryDate,   // Antes assignedDate
         // entryDate se genera en el backend o aquí si prefieres
@@ -273,7 +273,7 @@ function renderProducts() {
         taskList.innerHTML = `
             <div class="empty-state">
                 <p>${products.length === 0 
-                    ? 'No hay productos. ¡Agrega el primero al inventario!' 
+                    ? 'No hay productos. Agrega el primero al inventario!' 
                     : 'No hay productos en esta categoría'}
                 </p>
             </div>
@@ -307,7 +307,7 @@ function renderProducts() {
                                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                                 <circle cx="12" cy="7" r="4"></circle>
                             </svg>
-                            <span>Cat: ${escapeHtml(product.category)}</span>
+                            <span>Q: ${escapeHtml(product.quantity)}</span>
                         </div>
 
                         <div class="task-detail">

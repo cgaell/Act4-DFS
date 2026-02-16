@@ -17,13 +17,13 @@ router.get('/', async (req, res) => {
 //funcion para poder agregar productos
 router.post('/', async (req, res) => {
     try {
-        const { name, category, expiryDate, id } = req.body;
+        const { name, quantity, expiryDate, id } = req.body;
         
         // Creamos el producto en Mongo
         const nuevoProducto = await Product.create({
             id: id || Date.now().toString(), // Usamos tu logica de ID o generamos uno
             name,
-            category,
+            quantity,
             expiryDate,
             createdBy: req.session.user ? req.session.user.name : 'System'
         });
@@ -38,10 +38,10 @@ router.post('/', async (req, res) => {
 //funcion para actualizar el status de la tarea
 router.put('/:id', validateTaskID, async (req, res) => {
     try {
-        const { name, category, expiryDate } = req.body;
+        const { name, quantity, expiryDate } = req.body;
         const producto = await Product.findOneAndUpdate(
             { id: req.params.id }, 
-            { name, category, expiryDate },
+            { name, quantity, expiryDate },
             { new: true } // Para que devuelva el objeto actualizado
         );
 

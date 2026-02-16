@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 const ProductSchema = new mongoose.Schema({
     id: { type: String, unique: true }, 
-    name: { type: String, required: true }, 
-    category: { type: String, required: true }, 
-    entryDate: { type: Date, default: Date.now }, 
-    expiryDate: { type: Date }, 
+    name: { type: String, required: true },
+    quantity: { type: Number, required: true, default: 0 }, // ANTES: category
+    entryDate: { type: Date, default: Date.now },
+    expiryDate: { type: Date },
     status: { 
         type: String, 
         default: 'in-stock', 

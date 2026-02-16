@@ -4,7 +4,7 @@ const { validateTaskID, isAdmin } = require('./middleware.js');
 const Product = require('./models/Product.js');
 
 
-router.get('/', async (req, res) => {
+router.get('/', isAdmin, async (req, res) => {
     try {
         const productos = await Product.find(); // Mongoose hace la magia
         res.status(200).json({ total: productos.length, productos });
@@ -55,7 +55,7 @@ router.put('/:id', validateTaskID, async (req, res) => {
 });
 
 //funcion para poder eliminar productos
-router.delete('/:id', validateTaskID, isAdmin, async (req, res) => {
+router.delete('/:id', validateTaskID, async (req, res) => {
     try {
         const resultado = await Product.findOneAndDelete({ id: req.params.id });
         

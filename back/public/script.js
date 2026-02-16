@@ -96,6 +96,7 @@ async function loginUser() {
         });
         const data = await res.json();
         if (res.ok) {
+            localStorage.setItem('currentUserName', payload.username);
             loginMessage.textContent = data.message || 'Login exitoso';
             loginMessage.style.color = 'lightgreen';
             setTimeout(() => window.location.href = '/', 1000); // Redirigir
@@ -251,18 +252,41 @@ async function updateProductStatus(id, newStatus) {
 // --- RENDER FUNCTIONS ---
 
 async function loadProducts() {
+    // 1. Identificar al usuario para cargar su inventario específico
+    const currentUser = localStorage.getItem('currentUserName') || 'guest';
+    const localKey = `inventory_${currentUser}`;
+
+    // 2. Intento de carga inmediata desde LocalStorage (Persistencia local)
+    const localData = localStorage.getItem(localKey);
+    if (localData) {
+        try {
+            products = JSON.parse(localData);
+            renderProducts();
+            updateCounts();
+            console.log('Datos cargados desde LocalStorage');
+        } catch (e) {
+            console.error('Error parseando LocalStorage', e);
+        }
+    }
+
+    // 3. Sincronización con el servidor
     try {
-        const response = await fetch('/products'); // Endpoint cambiado
-        if (!response.ok) throw new Error('Failed to fetch');
+        const response = await fetch('/products'); 
+        if (!response.ok) throw new Error('Failed to fetch from server');
+        
         const data = await response.json();
-        products = data.products || []; // Esperamos "productos" del backend
+        products = data.products || []; 
+
+        // 4. Actualizar LocalStorage con la "verdad" del servidor
+        localStorage.setItem(localKey, JSON.stringify(products));
+        
         renderProducts();
         updateCounts();
+        console.log('Sincronización con servidor exitosa');
     } catch (error) {
-        console.error('Error loading products:', error);
-        products = [];
-        renderProducts();
-        updateCounts();
+        console.error('Error loading products from server:', error);
+        // No limpiamos 'products' aquí para que el usuario pueda seguir 
+        // viendo los datos de LocalStorage aunque el servidor falle.
     }
 }
 

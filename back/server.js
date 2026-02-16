@@ -16,7 +16,7 @@ connectDB(); // Conectar a la base de datos
 
 //Importar las rutas de JS 
 const usuariosRouter = require('./users.js'); //importar rutas de usuarios
-const tareasRouter = require('./tareas.js'); //importar rutas de tareas
+const productosRouter = require('./productos.js'); //importar rutas de tareas
 const authRouter = require('./auth.js'); //importar rutas de autenticacion
 
 app.use(logRequest); // Middleware global: SE COLOCA ANTES DE TODAS LAS RUTAS
@@ -43,7 +43,7 @@ app.use(express.static(publicPath));
 // usar enrutadores de JS para usuarios, autenticacion y tareas
 app.use('/users', usuariosRouter);
 app.use('/', authRouter);
-app.use('/tareas', require('./middleware.js').validateSession, tareasRouter); //validar sesion antes de acceder a rutas de tareas
+app.use('/productos', require('./middleware.js').validateSession, productosRouter); //validar sesion antes de acceder a rutas de productos
 
 // app.get('/register', (req, res) => { //ruta para registrarse
 //     res.sendFile(path.join(__dirname, '../front/register.html')); //enviar archivo register.html

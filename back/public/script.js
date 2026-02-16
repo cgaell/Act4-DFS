@@ -4,10 +4,10 @@ let currentFilter = 'all';
 
 // Status configuration
 const statusConfig = {
-    'not-started': { label: 'Not Started', class: 'badge-not-started' },
-    'in-progress': { label: 'In Progress', class: 'badge-in-progress' },
-    'completed': { label: 'Completed', class: 'badge-completed' },
-    'on-hold': { label: 'On Hold', class: 'badge-on-hold' }
+    'in-stock': { label: 'En Stock', class: 'badge-completed' },       // Usamos clases verdes
+    'low-stock': { label: 'Bajo Stock', class: 'badge-in-progress' },  // Clases amarillas
+    'out-of-stock': { label: 'Agotado', class: 'badge-not-started' },  // Clases rojas
+    'discontinued': { label: 'Discontinuado', class: 'badge-on-hold' } // Clases grises
 };
 
 // DOM Elements

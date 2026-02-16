@@ -1,38 +1,37 @@
 const express = require('express');
 const router = express.Router();
 const { validateTaskID, isAdmin } = require('./middleware.js');
-const Task = require('./models/Task.js');
+const Product = require('./models/Product.js');
 
 
 router.get('/', async (req, res) => {
     try {
-        const tareas = await Task.find(); // Mongoose hace la magia
-        res.status(200).json({ total: tareas.length, tareas });
+        const productos = await Product.find(); // Mongoose hace la magia
+        res.status(200).json({ total: productos.length, productos });
     } catch (err) {
-        res.status(500).json({ message: 'Error obteniendo tareas' });
+        res.status(500).json({ message: 'Error obteniendo productos' });
     }
 });
 
 
-//funcion para poder agregar tareas
+//funcion para poder agregar productos
 router.post('/', async (req, res) => {
     try {
-        const { taskName, status, assignedTo, assignedDate, id } = req.body;
+        const { name, category, expiryDate, id } = req.body;
         
-        // Creamos la tarea en Mongo
-        const nuevaTarea = await Task.create({
+        // Creamos el producto en Mongo
+        const nuevoProducto = await Product.create({
             id: id || Date.now().toString(), // Usamos tu logica de ID o generamos uno
-            taskName,
-            status,
-            assignedTo,
-            assignedDate,
+            name,
+            category,
+            expiryDate,
             createdBy: req.session.user ? req.session.user.name : 'System'
         });
 
-        res.status(201).json({ message: 'Tarea creada', tarea: nuevaTarea });
+        res.status(201).json({ message: 'Producto creado', producto: nuevoProducto });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Error creando tarea' });
+        res.status(500).json({ message: 'Error creando producto' });
     }
 });
 
@@ -46,25 +45,25 @@ router.put('/:id', validateTaskID, async (req, res) => {
             { new: true } // Para que devuelva el objeto actualizado
         );
 
-        if (!tarea) return res.status(404).json({ message: 'Tarea no encontrada' });
+        if (!tarea) return res.status(404).json({ message: 'Producto no encontrado' });
         
-        res.status(200).json({ message: 'Tarea actualizada', tarea });
+        res.status(200).json({ message: 'Producto actualizado', producto: tarea });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Error actualizando tarea' });
+        res.status(500).json({ message: 'Error actualizando producto' });
     }
 });
 
 //funcion para poder eliminar tareas
 router.delete('/:id', validateTaskID, isAdmin, async (req, res) => {
     try {
-        const resultado = await Task.findOneAndDelete({ id: req.params.id });
+        const resultado = await Product.findOneAndDelete({ id: req.params.id });
         
-        if (!resultado) return res.status(404).json({ message: 'Tarea no encontrada' });
+        if (!resultado) return res.status(404).json({ message: 'Producto no encontrado' });
 
-        res.status(200).json({ message: 'Tarea eliminada' });
+        res.status(200).json({ message: 'Producto eliminado' });
     } catch (err) {
-        res.status(500).json({ message: 'Error eliminando' });
+        res.status(500).json({ message: 'Error eliminando producto' });
     }
 });
 

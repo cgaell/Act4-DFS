@@ -16,25 +16,25 @@
     <div class="container">
         <!-- Encabezado de la página -->
         <div class="header">
-            <h1>EPIC TASK LIST</h1>
-            <p>Actividad 3 de desarrollo full stack</p>
+            <h1> PRODUCT INVENTORY </h1>
+            <p>Actividad 4 de desarrollo full stack</p>
         </div>
 
             <!-- Boton de agregar tarea -->    
         <div class="add-task-section">
             <button class="btn btn-primary btn-lg" id="openDialogBtn">
                 <div><i class="fa-solid fa-plus"></i></div> <!-- font-awesome icono -->
-                Add New Task
+                Add New Product
             </button>
         </div>
 
-        <!-- navbar de filtrado de tareas -->
+        <!-- navbar de filtrado de productos -->
         <div class="filter-section">
             <button class="filter-btn active" data-filter="all">All (<span id="count-all">0</span>)</button>
-            <button class="filter-btn not-started" data-filter="not-started">Not Started (<span id="count-not-started">0</span>)</button>
-            <button class="filter-btn in-progress" data-filter="in-progress">In Progress (<span id="count-in-progress">0</span>)</button>
-            <button class="filter-btn on-hold" data-filter="on-hold">On Hold (<span id="count-on-hold">0</span>)</button>
-            <button class="filter-btn completed" data-filter="completed">Completed (<span id="count-completed">0</span>)</button>
+            <button class="filter-btn in-stock" data-filter="in-stock">In Stock (<span id="count-in-stock">0</span>)</button>
+            <button class="filter-btn low-stock" data-filter="low-stock">Low Stock (<span id="count-low-stock">0</span>)</button>
+            <button class="filter-btn out-of-stock" data-filter="out-of-stock">Out of Stock (<span id="count-out-of-stock">0</span>)</button>
+            <button class="filter-btn discontinued" data-filter="discontinued">Discontinued (<span id="count-discontinued">0</span>)</button>
         </div>
 
         <!-- Lista de tareas -->
@@ -45,28 +45,28 @@
     <div id="taskDialog" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Create New Task</h2>
+                <h2>Create New Product</h2>
                 <button class="close-btn" id="closeDialogBtn">&times;</button>
             </div>
-            <p class="modal-description">Fill in the details below to create a new task.</p>
+            <p class="modal-description">Fill in the details below to create a new product.</p>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="taskName">Task Name *</label>
-                    <input type="text" id="taskName" placeholder="Enter task name" required>
+                    <label for="taskName">Product Name *</label>
+                    <input type="text" id="taskName" placeholder="Enter product name" required>
                 </div>
                 <div class="form-group">
-                    <label for="taskDescription">Task Description</label>
-                    <textarea id="taskDescription" placeholder="Enter task description"></textarea>
+                    <label for="taskDescription">Product Description</label>
+                    <textarea id="taskDescription" placeholder="Enter product description"></textarea>
                 </div>
                 <!-- Campo para seleccionar el estado de la tarea -->
                 <div class="form-group">
                     <label for="status">Status</label>
                     <select id="status">
-                        <option value="not-started">Not Started</option>
-                        <option value="in-progress">In Progress</option>
-                        <option value="on-hold">On Hold</option>
-                        <option value="completed">Completed</option>
-                    </select>
+                        <option value="in-stock">En Stock</option>
+                        <option value="low-stock">Bajo Stock</option>
+                        <option value="out-of-stock">Agotado</option>
+                        <option value="discontinued">Descontinuado</option>
+                </select>
                 </div>
 
                 <!-- Campo para asignar la tarea a una persona -->
@@ -84,7 +84,7 @@
             <!-- Footer para crear los botones de abajo del formulario (cancelar y crear tarea)-->
             <div class="modal-footer">
                 <button class="btn btn-outline" id="cancelBtn">Cancel</button>
-                <button class="btn btn-primary" id="createTaskBtn">Create Task</button>
+                <button class="btn btn-primary" id="createTaskBtn">Create Product</button>
             </div>
         </div>
     </div>

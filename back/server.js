@@ -31,12 +31,12 @@ app.use(session({
 // Ruta raíz: si no hay sesión, redirige a /login; si hay sesión, sirve el index
 app.get('/', (req, res) => {
     if (req.session && req.session.user) {
-        return res.sendFile(path.join(__dirname, '../public/index.html'));
+        return res.sendFile(path.join(publicPath, 'index.html'));
     } else {
         return res.redirect('/login');
     }
 });
-const publicPath = path.join(process.cwd(), 'public');
+const publicPath = path.join(__dirname, 'public');
 // Esto reemplaza la necesidad de hacer require del index.html
 app.use(express.static(publicPath));
 

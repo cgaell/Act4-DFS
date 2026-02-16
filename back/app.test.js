@@ -1,12 +1,12 @@
 /** @jest-environment node */
 const request = require('supertest');
-const app = require('../server'); 
-const Product = require('../models/Product');
-const User = require('../models/User');
+const app = require('./server'); 
+const Product = require('./models/Product');
+const User = require('./models/User');
 
 // --- MOCKS DE MIDDLEWARE ---
 // Saltamos la seguridad para probar solo la lógica de las rutas
-jest.mock('../middleware.js', () => ({
+jest.mock('./middleware.js', () => ({
     validateSession: (req, res, next) => {
         req.session = { user: { name: 'testuser', role: 'admin' } };
         next();
@@ -19,8 +19,8 @@ jest.mock('../middleware.js', () => ({
 
 // --- MOCKS DE MODELOS (MongoDB) ---
 // Evitamos la conexión real a Atlas para pruebas unitarias rápidas
-jest.mock('../models/Product');
-jest.mock('../models/User');
+jest.mock('./models/Product');
+jest.mock('./models/User');
 
 describe('Suite de Pruebas Unitarias - Inventario y Usuarios', () => {
 

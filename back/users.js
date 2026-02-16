@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const User = require('./models/User'); // Modelo
 const { validateUserID, isAdmin } = require('./middleware.js');
+const middleware = require('./middleware.js');
 
 // Obtener todos los usuarios
-router.get('/', isAdmin, async (req, res) => {
+router.get('/', middleware.isAdmin, async (req, res) => {
     try {
         // .select('-passwordHash') sirve para NO devolver la contraseña al front
         const usuarios = await User.find().select('-passwordHash'); 
@@ -15,7 +16,7 @@ router.get('/', isAdmin, async (req, res) => {
 });
 
 // Obtener un usuario
-router.get('/:id', validateUserID, async (req, res) => {
+router.get('/:id', middleware.validateUserID, async (req, res) => {
     try {
         const user = await User.findOne({ id: req.params.id }).select('-passwordHash');
         if (user) {

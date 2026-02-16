@@ -11,8 +11,9 @@ const PORT = 8080;
 
 
 const { logRequest, isAdmin } = require('./middleware.js'); //importar middleware con logrequest y la validacion de que si es admin o no
-
-connectDB(); // Conectar a la base de datos
+if (process.env.NODE_ENV !== 'test') {
+    connectDB(); // Conectar a la base de datos
+}
 
 //Importar las rutas de JS 
 const usuariosRouter = require('./users.js'); //importar rutas de usuarios
@@ -98,3 +99,5 @@ app.use('/products', require('./middleware.js').validateSession, productosRouter
 app.listen(PORT, () => {
     console.log(`Servidor corriendo en http://localhost:${PORT}`);
 });
+
+module.exports = app;

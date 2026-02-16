@@ -47,4 +47,4 @@ https://act4-dfs.vercel.app/
 
 # Que se puede realizar dentro del administrador?
 * Puedes agregar, editar y cambiar el status y cantidad de los productos.
-* __Solo el administrador puede eliminar los productos__, __al igual que consultar los proudctos y los usuarios__ dentro de la base de datos.
+*  __Solo el administrador puede consultar los proudctos y los usuarios__ dentro de la base de datos.

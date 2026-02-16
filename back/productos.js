@@ -4,7 +4,7 @@ const { validateTaskID, isAdmin } = require('./middleware.js');
 const Product = require('./models/Product.js');
 
 
-router.get('/', isAdmin, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const productos = await Product.find(); // Mongoose hace la magia
         res.status(200).json({ total: productos.length, productos });

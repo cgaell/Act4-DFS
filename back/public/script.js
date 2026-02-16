@@ -96,6 +96,7 @@ async function loginUser() {
         });
         const data = await res.json();
         if (res.ok) {
+            const username = loginUsername.value.trim()
             localStorage.setItem('currentUserName', payload.username);
             loginMessage.textContent = data.message || 'Login exitoso';
             loginMessage.style.color = 'lightgreen';
@@ -176,7 +177,15 @@ async function createProduct() {
         // entryDate se genera en el backend o aquí si prefieres
         entryDate: getTodayDate()
     };
+        products.unshift(newProduct);
+    
+    
+    localStorage.setItem(`inventory_${currentUser}`, JSON.stringify(products));
 
+   
+        renderProducts();
+        updateCounts();
+        closeDialog();
     try {
         const response = await fetch('/products', { // Endpoint cambiado
             method: 'POST',
